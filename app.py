@@ -1,6 +1,6 @@
 import torch
 from torch import autocast
-from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers import DiffusionPipeline, KDPM2DiscreteScheduler
 import base64
 from io import BytesIO
 import os
@@ -11,11 +11,11 @@ def init():
     global model
     HF_AUTH_TOKEN = os.getenv("HF_AUTH_TOKEN")
     
-    repo_id = "stabilityai/stable-diffusion-2-1"
+    repo_id = "stabilityai/stable-diffusion-2"
 
-    scheduler = DPMSolverMultistepScheduler.from_pretrained(repo_id, subfolder="scheduler", prediction_type="v_prediction")
+    scheduler = KDPM2DiscreteScheduler.from_pretrained(repo_id, subfolder="scheduler", prediction_type="v_prediction")
 
-    model = DiffusionPipeline.from_pretrained(repo_id, torch_dtype=torch.float16, scheduler=scheduler, use_auth_token=HF_AUTH_TOKEN).to("cuda")
+    model = DiffusionPipeline.from_pretrained(repo_id, torch_dtype=torch.float16, revision="fp16", scheduler=scheduler, use_auth_token=HF_AUTH_TOKEN).to("cuda")
 
 # Inference is ran for every server call
 # Reference your preloaded global model variable here.
