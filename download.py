@@ -1,7 +1,7 @@
 # In this file, we define download_model
 # It runs during container build time to get model weights built into the container
 
-from diffusers import DiffusionPipeline, EulerDiscreteScheduler
+from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
 import torch
 
 import os
@@ -12,13 +12,12 @@ def download_model():
     HF_AUTH_TOKEN = os.getenv("HF_AUTH_TOKEN")
 
 
-    repo_id = "stabilityai/stable-diffusion-2"
+    repo_id = "stabilityai/stable-diffusion-2-1"
 
-    scheduler = EulerDiscreteScheduler.from_pretrained(repo_id, subfolder="scheduler", prediction_type="v_prediction")
+    scheduler = DPMSolverMultistepScheduler.from_pretrained(repo_id, subfolder="scheduler", prediction_type="v_prediction")
 
     model = DiffusionPipeline.from_pretrained(repo_id, 
         torch_dtype=torch.float16, 
-        revision="fp16", 
         scheduler=scheduler,
         use_auth_token=HF_AUTH_TOKEN
     )
